@@ -93,7 +93,6 @@ int main(int p_argc, char** p_argv)
 
     std::cout << "[+] Creating JAR entries" << std::endl;
     std::string jars;
-    create_jar_entry(jars, "env.properties", "#Placehold file to put in pdm.sgz\n#Tue Feb 15 11:00:0 PST 2005\n");
     std::string payload(load_file("PDMApplet.class"));
     if (payload.empty())
     {
