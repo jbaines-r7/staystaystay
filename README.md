@@ -4,7 +4,11 @@
 
 If a victim connects their ASDM to `staystaystay` then it will inject a [Longtime Sunshine](https://github.com/jbaines-r7/longtime-sunshine) payload resulting in a reverse shell. See the following video for an example:
 
-https://www.youtube.com/watch?v=07VO2JGTWR8
+* https://www.youtube.com/watch?v=07VO2JGTWR8
+
+An AttackerKB write up can be found here:
+
+* https://attackerkb.com/topics/0vIso8fLhQ/cve-2021-1585/rapid7-analysis
 
 ## Usage
 
