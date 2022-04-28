@@ -54,6 +54,7 @@ int main(int p_argc, char** p_argv)
     auto help_option = op.add<popl::Switch>("h", "help", "produce help message");
     auto lhost_option = op.add<popl::Value<std::string>, popl::Attribute::required>("", "lhost", "The host to connect back");
     auto lport_option = op.add<popl::Value<int>, popl::Attribute::required>("", "lport", "The port to connect back to");
+    auto https_port_option = op.add<popl::Value<int>>("", "https_port", "The port for the HTTP server to listen on", 443);
 
     try
     {
@@ -145,8 +146,11 @@ int main(int p_argc, char** p_argv)
     std::cout << "[+] Changing working directory to ../http" << std::endl;
     chdir("../http/");
 
-    std::cout << "[+] Starting python server on :443. Hope you are running as root... it's fine." << std::endl;
-    system("python3 ./server.py");
+    std::stringstream port_convert;
+    port_convert << https_port_option->value();
+
+    std::cout << "[+] Starting python server on port " << port_convert.str() << std::endl;
+    system(std::string("python3 ./server.py --port " + port_convert.str()).c_str());
 
     return EXIT_FAILURE;
 }
