@@ -46,6 +46,25 @@ namespace
             p_haystack.replace(pos, p_needle.size(), p_replacement);
         }
     }
+
+    bool is_java8()
+    {
+        FILE* popen_handle = popen("java -version 2>&1", "r");
+        if (popen_handle == NULL)
+        {
+            return false;
+        }
+
+        std::string java_version;
+        std::array<char, 128> p_open_data;
+        while (fgets(p_open_data.data(), 128, popen_handle) != NULL)
+        {
+            java_version += p_open_data.data();
+        }
+        pclose(popen_handle);
+
+        return java_version.find("version \"1.8") != std::string::npos;
+    }
 }
 
 int main(int p_argc, char** p_argv)
@@ -79,6 +98,13 @@ int main(int p_argc, char** p_argv)
         (!sunshine_option->is_set() && !jjs_option->is_set()))
     {
         std::cerr << "[!] You must select either a sunshine payload or a jjs payload." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    // validate the user is using Java 8
+    if (!is_java8())
+    {
+        std::cerr << "[!] The payload must be compiled with Java 8." << std::endl;
         return EXIT_FAILURE;
     }
 
